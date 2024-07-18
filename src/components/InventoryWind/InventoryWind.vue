@@ -4,42 +4,27 @@
     min-height="505" 
     class="wrapper pa-0 rounded-lg border-md border-secondary">
         <v-layout 
-        v-for="(cell) in inventoryCells" 
+        v-for="cell in inventoryCells" 
         class="cell" 
         :key="cell.id" 
         @drop="onDrop($event, cell.id)"
         @dragover.prevent @dragenter.prevent>
-            <div 
-            v-for="item in items.filter(x => x.categoryId === cell.id)" 
-            :key="item.id" 
-            class="item"
-            draggable="true" 
-            @click.stop="drawer = !drawer"        
-            @dragstart="onDragStart($event, item)"
-            :style="{ backgroundColor: item.color }" >
-                <div class="amount">{{ item.amount }}</div>
-            </div>
-            <v-navigation-drawer :width="500" v-model="drawer" class="drawer" location="right">
-                <v-card>
-                    <v-toolbar class="drawer__topbar">
-                        <v-spacer></v-spacer>
-                        <v-btn>X</v-btn>
-                    </v-toolbar>
-                </v-card>
-
-            </v-navigation-drawer>
+            <InventoryDetail :items="items" :cell="cell" :onDragStart="onDragStart"/>
         </v-layout>
     </v-card>
 </template>
 
 <script>
 import { ref } from 'vue';
+import InventoryDetail from './InventoryDetail.vue'
 
 export default {
     name: 'InventoryWind',
+    components: {
+        InventoryDetail,
+    },
     setup() {
         const inventoryCells = ref([]);
-        const drawer = ref(false);
         const items = ref([
             {
                 id: 1,
@@ -61,7 +46,7 @@ export default {
             },
         ]);
 
-        for (let i = 0; i < 120; i++) {
+        for (let i = 0; i < 100; i++) {
             inventoryCells.value.push({ id: i });
         }
 
@@ -81,7 +66,7 @@ export default {
             });
         }
 
-        return { items, inventoryCells, onDragStart, onDrop, drawer };
+        return { items, inventoryCells, onDragStart, onDrop };
     }
 }
 </script>
@@ -96,14 +81,6 @@ export default {
     height: calc(100vh - 110px)
 }
 
-.item {
-    position: relative;
-    width: 48px;
-    height: 48px;
-    cursor: pointer;
-}
-
-
 .cell {
     display: flex;
     align-items: center;
@@ -114,40 +91,4 @@ export default {
 }
 
 
-.item::after {
-    position: absolute;
-    content: '';
-    left: 5px;
-    bottom: 5px;
-    width: 100%;
-    height: 100%;
-    background-color: inherit;
-    opacity: .4;
-    -webkit-box-shadow: -2px 4px 8px 5px rgba(34, 60, 80, 0.2);
-    -moz-box-shadow: -2px 4px 8px 5px rgba(34, 60, 80, 0.2);
-    box-shadow: -2px 4px 8px 5px rgba(34, 60, 80, 0.2);
-    backdrop-filter: blur(100px)
-}
-
-.amount {
-    position: absolute;
-    right: -28px;
-    bottom: -25px;
-    font-size: 10px;
-    padding: 2px 4px;
-    color: gray;
-    border-top: 1px solid gray;
-    border-left: 1px solid gray;
-    border-radius: 6px 0 0 0;
-}
-
-.drawer {
-    position: absolute !important;
-    background-color: rgba(29, 29, 29, 0.1);
-    backdrop-filter: blur(10px)
-}
-
-.drawer__topbar {
-    background-color: transparent!important;
-}
 </style>
